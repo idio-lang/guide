@@ -1,0 +1,9 @@
+# use glob syntax.
+syntax: glob
+
+*~
+make.bat
+
+build
+__pycache__
+venv
