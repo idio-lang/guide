@@ -99,7 +99,7 @@ environment variable for the transient period of a block:
    {
      PATH :* "/danger/will/robinson"
 
-     ls -l		; /danger/will/robinson/ls (possibly/not found)
+     ls -l		; /danger/will/robinson/ls (possibly, or not found)
    }
    
    ls -l		; /usr/bin/ls (again)
@@ -170,9 +170,10 @@ reference or set the variable as appropriate.
    var = -9			; local-v is -9
    var				; 1
 
-:lname:`Idio` defines :ref:`SECONDS <ref:SECONDS>` is a read-only
-value which returns the number of seconds that :program:`idio` has
-been running for.  There is no setter.
+As a more practical example, :lname:`Idio` defines :ref:`SECONDS
+<ref:SECONDS>` as a read-only value which returns the number of
+seconds that :program:`idio` has been running for.  There is no
+setter.
 
 .. code-block:: idio
 
@@ -180,6 +181,17 @@ been running for.  There is no setter.
 
 .. [#] As a mnemonic for computed, think "colon-dollar" for it
        referencing a function for getting or setting.
+
+Nested Recursive Functions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As mentioned before, ``:+`` [#]_ creates a lexically scoped
+recursively aware variable inside a block.  Clearly this is only
+useful for a function.
+
+You cannot use this at the top-level, use regular ``define``.
+
+.. [#] As a mnemonic think "colon-plus" as calling myself repeatedly.
 
 Assignment
 ----------
@@ -232,14 +244,17 @@ mechanism to create them.  They'll have the form :samp:`#<{name}>`:
 Numbers
 -------
 
-There are two types of numbers, "small" integer :ref:`fixnums
-<ref:fixnum type>` or "arbitrary" precision :ref:`bignums <ref:bignum
-type>`, which can be used interchangeably.
+There are two types of :ref:`numbers <ref:number types>`, "small"
+integer :ref:`fixnums <ref:fixnum type>` or "arbitrary" precision
+:ref:`bignums <ref:bignum type>`, which can be used interchangeably.
 
 They look like regular numbers: ``-1``, ``1.23``, ``10e99`` etc..
 
 There's a small caveat that to avoid one of the infix operators,
 floating point numbers must have a digit before the decimal place.
+
+There is no support for non-finite quantities such as *Nan* or
+infinities.
 
 Characters
 ----------
@@ -305,7 +320,9 @@ The usual escapes are:
 
   :lname:`Idio` strings with ASCII NULs in them are fine,
   ``"hello\x0world"``, but operating system interfaces will not be so
-  happy.  A "format" error will be raised if you forget.
+  happy.  A "format" error will be raised if you forget and pass such
+  a string to those functions that might try to pass it to an
+  operating system interface.
 
 Pathnames
 ^^^^^^^^^
@@ -320,7 +337,8 @@ It's a bit awkward but mostly correct.
 Problems arise if you try to compare your UTF-8 encoded source code
 string with the byte-sequence string from the filesystem.
 
-Of course, you can create pathnames in source to do such comparisons:
+Of course, you can create pathnames in source to do such comparisons
+with the ``%P{...}`` expression:
 
 .. code-block:: idio
 
@@ -333,9 +351,8 @@ with 0xA9 directly (and is invalid UTF-8).
 
 .. hint::
 
-   Even if you thought you just created the file, :lname:`Idio` can't
-   be so sure and so will always return the filename tagged as a
-   pathname.
+   If an operating system interface is queried for a filename,
+   :lname:`Idio` will always return the filename tagged as a pathname.
 
 .. _`string interpolation`:
 
@@ -369,9 +386,9 @@ It's very useful for code generation.
 Symbols
 -------
 
-Symbols, "names", perhaps, are a type in their own right.  They are
-normally used as variable names, that is, references to values, but
-are quite handy as flags.
+:ref:`Symbols <ref:symbol type>`, "names", perhaps, are a type in
+their own right.  They are normally used as variable names, that is,
+references to values, but are quite handy as flags.
 
 In a small number of cases you might need to :ref:`quote <ref:quote
 special form>` the symbol to prevent the evaluator resolving a
@@ -386,9 +403,9 @@ variable name to a value when you actually want the variable name:
 Keywords
 --------
 
-Keywords are, essentially, symbols that start with ``:`` and are used
-as semantic flags: indicating an optional parameter to a function,
-say.
+:ref:`Keywords <ref:keyword type>` are, essentially, symbols that
+start with ``:`` and are used as semantic flags: indicating an
+optional parameter to a function, say.
 
 Handles
 -------
@@ -434,9 +451,11 @@ you just wrote.
 C Data Types
 ------------
 
-For interaction with the standard library and :lname:`C` extensions,
-:lname:`Idio` supports the fourteen :lname:`C` base types and
-module-oriented typedefs thereof and :lname:`C` pointer types.
+For interaction with :ref:`libc <ref:libc module>`, the standard
+library, and :lname:`C` extensions, :lname:`Idio` supports the
+fourteen :lname:`C` base types and module-oriented typedefs thereof
+and :lname:`C` pointer types through the :ref:`C module <ref:C
+module>`.
 
 There is limited manipulation of :lname:`C` data types, they are
 generally passed around opaquely.  You can do some comparisons and
@@ -618,6 +637,115 @@ There's nothing to stop the helper functions having helper functions
 inside them.  You could go a bit wild, here, but try to think of the
 person who has to maintain your code.
 
+Nested Recursive Functions
+""""""""""""""""""""""""""
+
+*Corner case alert!*
+
+Free variables are the problem here, these are variables which are
+referenced inside a block of code which the block did not contain the
+definition for:
+
+.. code-block:: idio
+
+   define (foo a) {
+     a + n
+   }
+
+``n`` isn't defined anywhere (obvious) so we assume that it is defined
+in our top-level or the top-level of one of the modules we import.
+That seems reasonable, what else can we do?  When we come to use ``n``
+we'll shuffle about looking for an ``n`` in our top-level or the
+top-level of one of the modules we import.
+
+What if we want to call ourselves?
+
+.. code-block:: idio
+
+   define (foo a*) {
+     if (null? a*) #n {
+       foo (pt a*)
+     }
+   }
+
+(this function doesn't do anything useful other than walk along a list
+to the end and returns ``#n``)
+
+We know that is going to be rewritten to:
+
+.. code-block:: idio
+
+   define foo (function (a*) {
+     if (null? a*) #n {
+       foo (pt a*)
+     }
+   })
+
+and, as the precursor to defining ``foo``, the evaluator will see the
+function value creation:
+
+.. code-block:: idio
+
+   function (a*) {
+     if (null? a*) #n {
+       foo (pt a*)
+     }
+   }
+
+which contains the free variable ``foo``.  Hmm, we haven't defined
+``foo`` yet but we're trying to use it.
+
+Well, we sort of get away with this as when we come to use the
+function value we'll find ``foo`` in our own top-level and promptly
+call ourselves, which is what we want.
+
+Technically, though, you could subsequently redefine ``foo`` and we'll
+get the new ``foo`` instead.  Which might not be what you want.
+
+This is even worse inside a block as *names* disappear and when the
+code is called there'll be no ``foo`` at the top-level.  Oh dear.
+
+.. code-block:: idio
+
+   {
+     ...
+
+     define (foo a*) {
+       if (null? a*) #n {
+	 foo (pt a*)
+       }
+     }
+
+     foo '(1 2 3)
+   }
+
+There is an answer to all of this pernickety nonsense with what is
+called ``letrec`` in :lname:`Lisp`\ y languages.  Inside a block, any
+use of ``define`` is rewritten as a call to ``letrec``.
+
+``letrec`` plays a little trick like the one we played above where we
+defined ``add`` and ``sum`` as ``#f`` outside the block and
+re-assigned to them inside the block.  That means that the evaluator
+can see a use of the variable in its lexical scope and can therefore
+reference that instance rather than guessing that the variable is
+probably defined at the top-level somewhere.
+
+Inside a block, ``letrec`` has a ``:+`` infix operator:
+
+.. code-block:: idio
+
+   {
+     ...
+
+     foo :+ function (a*) {
+       if (null? a*) #n {
+	 foo (pt a*)
+       }
+     }
+
+     foo '(1 2 3)
+   }
+
 Pairs and Lists
 ---------------
 
@@ -633,7 +761,7 @@ second pair's tail to reference another pair.  And so on.  The final
 pair's tail will reference ``#n``.
 
 That arrangement of pairs is called a *list* and occurs pretty
-frequently.  So frequently that there's a number of ways in:
+frequently.  So frequently that there's a couple of ways in:
 
 .. code-block:: idio
 
@@ -661,11 +789,11 @@ association list:
 
    The ``'``, a synonym of :ref:`quote <ref:quote special form>`, is
    used to prevent the evaluator looking at the expression and trying
-   to call the functions ``(#\a "apple" 'fruit)`` etc..
+   to invoke the function calls ``(#\a "apple" 'fruit)`` etc..
 
-where ``#\a`` is "associated" with the list ``(#\a "apple 'fruit)``.
-Functions like :ref:`assq <ref:assq>` etc. look for a key, the
-``#\a``, and return the associated list if found.
+where ``#\a`` is the key "associated" with the list ``(#\a "apple
+'fruit)``.  Functions like :ref:`assq <ref:assq>` etc. look for a key,
+the ``#\a``, and return the associated list if found.
 
 Arrays
 ------

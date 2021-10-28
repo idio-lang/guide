@@ -12,20 +12,23 @@ language?
 It is a programming language first and foremost so not all traditional
 shell command syntax translates directly.
 
+Also, as a programming language, it is intolerant of failure.  No more
+shell scripts where errors slide casually by.
+
 A few pointers:
 
 * normal shell command syntax:
 
   .. code-block:: idio
 
-     find / -name foo | wc -l
+     find /usr -name foo | wc -l
 
   that is, :samp:`{cmd} {args}`, with no extraneous parentheses or
   commas.  That applies to the programming language proper, not just
   the "shell" syntax
 
 * (potential) variable names, ie. *symbols*, can be pretty flexible so
-  ``/``, ``-name``, ``|`` and ``-l`` were all symbols in the above
+  ``/usr``, ``-name``, ``|`` and ``-l`` were all symbols in the above
   example
 
 * which includes what would have been the shell meta-characters ``*``
@@ -42,7 +45,8 @@ A few pointers:
     familiar ``=``)
 
   * ``/`` is used to join module and value names if you use the name
-    "directly", for example, ``libc/exit``
+    "directly", for example, ``libc/exit``, to call the function
+    ``exit`` defined in the module ``libc``
 
   * ``:`` is the prefix for keywords
 
@@ -84,8 +88,8 @@ A few pointers:
   to use them.
 
   In the case of the pipeline, the system eventually decides to invoke
-  (the symbol) ``find`` -- with arguments ``/``, ``-name`` and ``foo``
-  each of which are (probably) symbols themselves.
+  (the symbol) ``find`` -- with arguments ``/usr``, ``-name`` and
+  ``foo`` each of which are (probably) symbols themselves.
 
   A symbol isn't invokable (it's not a function) so the system will
   break out of programming language mode and go into shell mode and
@@ -96,10 +100,10 @@ A few pointers:
 
   .. tip::
 
-     Try to use *strings* for filenames, so ``"/"`` and ``"foo"`` in
-     this case.
+     Try to use *strings* for filenames, so ``"/usr"`` and ``"foo"``
+     in this case.
 
-     That isn't because ``/`` and ``foo`` can't be translated into
+     That isn't because ``/usr`` and ``foo`` can't be translated into
      strings for an external command but because none of the
      redirection operators are expecting symbols as arguments so it's
      a good habit to be in.
@@ -117,6 +121,8 @@ A few pointers:
   .. code-block:: idio
 
      + a 1
+
+  *before* the *evaluator* gets to work.
 
   Now the ``+`` is in "functional position", ie. :samp:`{cmd}`, and
   will be resolved to be the function that adds numbers together.
@@ -142,7 +148,7 @@ A few pointers:
 
   .. code-block:: idio
 
-     find / -name foo.txt | wc -l
+     find /usr -name foo.txt | wc -l
 
   where the ``foo.txt`` part is seen by the reader as ``foo . txt``
   and is rearranged as the sub-expression ``(value-index foo txt)``
@@ -151,6 +157,12 @@ A few pointers:
 
   They almost certainly aren't variable names, though, and
   ``value-index`` will complain that ``foo`` is not indexable.
+
+  You could escape it like before:
+
+  .. code-block:: idio
+
+     find /usr -name foo\.txt | wc -l
 
 * **one expression per line**
 
@@ -233,6 +245,10 @@ A few pointers:
   controlling terminals, Process Group IDs etc. just no support
   whatsoever for interactivity beyond terminal cooked mode.
 
+  Remember, :lname:`Idio` is intolerant of failure, even in
+  interactive sessions, and the default behaviour is to quit when an
+  external command fails.
+
 Before we go on and get lost in the details, here's a
 
 .. warning::
@@ -270,6 +286,7 @@ Let's dig into some detail.
 
    var-val
    functions
+   shell
    evaluation
 
 .. include:: ./commit.rst
