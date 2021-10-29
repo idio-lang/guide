@@ -33,6 +33,7 @@ release = '0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.graphviz',
     'sphinx.ext.intersphinx',
     'sphinx_git',
     'aside',
@@ -48,6 +49,10 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
 
+intersphinx_mapping = {
+    'ref': ('https://idio-lang.org/docs/ref', None),
+}
+
 import idio_lexer
 
 # -- Options for HTML output -------------------------------------------------
@@ -59,7 +64,7 @@ html_theme = 'idio-theme'
 
 html_theme_path = ['.']
 
-html_short_title = 'Idio Reference'
+html_short_title = 'Idio'
 
 # Alabaster theme options
 html_theme_options = {
@@ -73,7 +78,7 @@ html_theme_options = {
     # https://github.com/{github_user}/{github_repo}
     'github_button': True,
     'github_user': 'idio-lang',
-    'github_repo': 'idio',
+    'github_repo': 'sphinx-source',
 
     # Normally these would be used in the sidebar navigation.html
     # (which we comment out below) but we re-use in the header
@@ -93,6 +98,7 @@ html_sidebars = {
         'relations.html',
         'searchbox.html',
         'donate.html',
+        # 'sourcelink.html',
     ]
 }
 
