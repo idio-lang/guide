@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath('./_ext'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Idio'
+project = 'Idio User Guide'
 now = datetime.datetime.now()
 copyright = '{0}, Ian Fitchet'.format (now.year)
 author = 'Ian Fitchet'
@@ -64,7 +64,7 @@ html_theme = 'idio-theme'
 
 html_theme_path = ['.']
 
-html_short_title = 'Idio'
+html_short_title = 'Idio User Guide'
 
 # Alabaster theme options
 html_theme_options = {
@@ -78,7 +78,7 @@ html_theme_options = {
     # https://github.com/{github_user}/{github_repo}
     'github_button': True,
     'github_user': 'idio-lang',
-    'github_repo': 'sphinx-source',
+    'github_repo': 'guide',
 
     # Normally these would be used in the sidebar navigation.html
     # (which we comment out below) but we re-use in the header
