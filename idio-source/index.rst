@@ -245,9 +245,11 @@ A few pointers:
   controlling terminals, Process Group IDs etc. just no support
   whatsoever for interactivity beyond terminal cooked mode.
 
-  Remember, :lname:`Idio` is intolerant of failure, even in
-  interactive sessions, and the default behaviour is to quit when an
-  external command fails.
+  Remember, :lname:`Idio` is intolerant of failure and the default
+  behaviour is to quit when an external command fails.
+
+  That *is* quite annoying in interactive sessions so those have this
+  behaviour suppressed (albeit re-asserted in pipelines).
 
 Before we go on and get lost in the details, here's a
 
@@ -286,6 +288,7 @@ Let's dig into some detail.
 
    var-val
    functions
+   errors
    shell
    evaluation
 

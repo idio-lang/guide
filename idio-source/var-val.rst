@@ -253,7 +253,7 @@ They look like regular numbers: ``-1``, ``1.23``, ``10e99`` etc..
 There's a small caveat that to avoid one of the infix operators,
 floating point numbers must have a digit before the decimal place.
 
-There is no support for non-finite quantities such as *Nan* or
+There is no support for non-finite quantities such as *NaN* or
 infinities.
 
 Characters

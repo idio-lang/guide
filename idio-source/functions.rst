@@ -226,13 +226,36 @@ with :ref:`cond <cond special form>` being the
 ``if .. elif .. elif .. else ..`` variant.  ``cond`` has an extremely
 powerful ``=>`` operator implementing an *anaphoric if*.
 
+``if`` breaks a few conventions in that it doesn't use ``then`` or
+``else``, it is simply:
+
+    :samp:`if {condition} {consequent} {alternative}`.
+
+If either of :samp:`{consequent}` or :samp:`{alternative}` are simple
+values then, together with the one line per expression, it can look
+awkward.
+
+Here, the :samp:`{consequent}`, ``#n``, feels lost in front of the
+opening brace of the :samp:`{alternative}`.
+
+.. code-block:: idio
+
+   if (pair? a) #n {
+     eprintf "not a pair!\n"
+   }
+
+Not great.
+
 :ref:`when <ref:when>` is syntactic sugar for ``if`` where there is no
 alternate clause.  It might scan better for maintainers.
 
 Use :ref:`not <ref:not>` to invert the boolean result with
 :ref:`unless <ref:unless>` implicitly doing it for you.
 
-Selecting between known cases is done with :ref:`case <ref:case>`.
+Selecting between known cases (think: explicit values) is done with
+:ref:`case <ref:case>`.  :ref:`regex-case <ref:regex-case>` and
+:ref:`pattern-case <ref:pattern-case>`, in particular, offer something
+closer to the shell's ``case`` statement.
 
 Looping Expressions
 -------------------
