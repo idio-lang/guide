@@ -429,4 +429,15 @@ There's a couple of solutions, here:
 
       libc/exit 3
 
+   .. attention::
+
+      Direct references are technically an *artefact*.  In practice,
+      once one module has imported, say, ``libc``, then the evaluator
+      can lookup direct references to names in ``libc``.
+
+      In this case, ``job-control`` is imported during bootstrap and
+      ``job-control``, in turn, imported ``libc``.  From then on
+      everyone is able to make direct references to names exported
+      from ``libc``.
+
 .. include:: ./commit.rst

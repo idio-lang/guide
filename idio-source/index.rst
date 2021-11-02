@@ -290,6 +290,7 @@ Let's dig into some detail.
    functions
    errors
    shell
+   running
    evaluation
 
 .. include:: ./commit.rst
