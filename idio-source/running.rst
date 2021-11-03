@@ -45,7 +45,8 @@ For *developers* (of :lname:`Idio`), the useful arguments are:
 
    enable the debugger (if the session is interactive)
 
-   (The debugger is barely useful, even for developers.)
+   (The debugger is barely useful, even for developers just to get
+   machine state.)
 
 .. option:: --vm-reports
 

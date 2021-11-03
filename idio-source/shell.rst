@@ -104,13 +104,43 @@ Quoting any potential clashes avoids the evaluation:
 
    make 'sort
 
+Return Value
+------------
+
+External commands will return ``#t`` or ``#f`` depending on whether
+they exited with 0 or not.  Well, they will initiate a return of
+``#f`` if they fail.
+
+Unfortunately, you can't easily use this in logical expressions
+(:ref:`and <ref:and special form>`, :ref:`or <ref:or special form>`,
+:ref:`not <ref:not>`) or conditional expressions (:ref:`if <ref:if
+special form>`, :ref:`cond <ref:cond special form>`) because if the
+external command failed an ``^rt-command-status-error`` condition will
+be raised, see below, for which the default behaviour is to exit (in
+the same manner as the external command died).
+
+You could, rather crudely, wrap the expression with an "rcse"
+condition handler that simply returns ``#f`` but the real problem lies
+in that this "logical suppression" should really only occur for the
+immediate expression and not any sub-expressions (used to calculate
+arguments, say).
+
+So, sadly, no system-provided equivalent of the shell's:
+
+.. code-block:: sh
+
+   if grep ... ; then
+
+Suggesting this is :abbr:`WIP (Work in Progress)` would give the
+erroneous impression a solution is nearer than it is.
+
 Errors
 ======
 
-It's worth noting that :lname:`Idio` is reluctant to let any external
-command errors go free.  As part of the flow of the script, if
-something failed, especially an external command, :lname:`Idio` should
-stop.
+It's worth repeating that :lname:`Idio` is reluctant to let any
+external command errors go unnoticed.  As part of the flow of the
+script, if something failed, especially an external command,
+:lname:`Idio` should stop.
 
 .. note::
 

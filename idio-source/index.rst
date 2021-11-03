@@ -291,6 +291,7 @@ Let's dig into some detail.
    errors
    shell
    running
+   examples/index
    evaluation
 
 .. include:: ./commit.rst
