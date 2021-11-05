@@ -15,5 +15,6 @@ It is a programming language first and foremost.
 
    looping/index
    matching/index
+   json/index
 
 .. include:: ../commit.rst
