@@ -249,8 +249,8 @@ Not great.
 :ref:`when <ref:when>` is syntactic sugar for ``if`` where there is no
 alternate clause.  It might scan better for maintainers.
 
-Use :ref:`not <ref:not>` to invert the boolean result with
-:ref:`unless <ref:unless>` implicitly doing it for you.
+Use :ref:`not <ref:not special form>` to invert the boolean result
+with :ref:`unless <ref:unless>` implicitly doing it for you.
 
 Selecting between known cases (think: explicit values) is done with
 :ref:`case <ref:case>`.  :ref:`regex-case <ref:regex-case>` and

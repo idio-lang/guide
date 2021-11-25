@@ -113,11 +113,11 @@ they exited with 0 or not.  Well, they will initiate a return of
 
 Unfortunately, you can't easily use this in logical expressions
 (:ref:`and <ref:and special form>`, :ref:`or <ref:or special form>`,
-:ref:`not <ref:not>`) or conditional expressions (:ref:`if <ref:if
-special form>`, :ref:`cond <ref:cond special form>`) because if the
-external command failed an ``^rt-command-status-error`` condition will
-be raised, see below, for which the default behaviour is to exit (in
-the same manner as the external command died).
+:ref:`not <ref:not special form>`) or conditional expressions
+(:ref:`if <ref:if special form>`, :ref:`cond <ref:cond special form>`)
+because if the external command failed an ``^rt-command-status-error``
+condition will be raised, see below, for which the default behaviour
+is to exit (in the same manner as the external command died).
 
 You could, rather crudely, wrap the expression with an "rcse"
 condition handler that simply returns ``#f`` but the real problem lies

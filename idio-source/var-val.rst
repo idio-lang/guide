@@ -213,7 +213,13 @@ more familiar ``=`` infix operator:
 		; occludes the top-level
 
      a		; 5
+
+     a = 3	; the local a is updated
+
+     a		; 3
    }
+
+		; back to using the top-level
 
    a		; 7
 
@@ -282,7 +288,8 @@ mean *code points*.  There's two ways of expressing a :ref:`unicode
 
   is also U+0127 (LATIN SMALL LETTER H WITH STROKE)
 
-  The usefulness of this form depends on editors and font support.
+  The usefulness of this second form depends on editors and font
+  support.
 
 Strings
 -------
@@ -353,6 +360,21 @@ with 0xA9 directly (and is invalid UTF-8).
 
    If an operating system interface is queried for a filename,
    :lname:`Idio` will always return the filename tagged as a pathname.
+
+Octet Strings
+^^^^^^^^^^^^^
+
+A final variant is an :ref:`octet-string <ref:octet string>` which is
+a sequence of bytes including ASCII NULs.  It has a ``%B{...}`` reader
+form.
+
+Mixing Strings
+^^^^^^^^^^^^^^
+
+You can :ref:`append-string <ref:append-string>` strings together and
+:ref:`join-string <ref:join-string>` strings with a delimiter but be
+careful as mixing string variants will result in a gracefully degraded
+result: `unicode` to `pathname` to `octet-string`.
 
 .. _`string interpolation`:
 

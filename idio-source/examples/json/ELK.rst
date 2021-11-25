@@ -59,7 +59,7 @@ and ``pass`` by passing optional parameters (see :ref:`define*
 Calling curl
 ============
 
-We can create a similar function for parameterizing the call the curl:
+We can create a similar function for parameterising the call the curl:
 
 .. code-block:: idio
 
@@ -108,6 +108,14 @@ to get something like:
 _cat/nodes
 ----------
 
+.. aside::
+
+   The "cat nodes" API is "compact and aligned text", deliberately
+   designed for humans.  We should be using the `nodes API
+   <https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-info.html>`_
+   but that gives us thousands of lines of JSON which distracts from
+   the idea of handling data interchange.
+
 The `cat nodes API
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html>`_
 can give us some JSON output:
@@ -148,8 +156,8 @@ to get:
 
 .. code-block:: text
 
-   elk1.example.com                 192.0.2.102  8
-   elk2.example.com                 192.0.2.101  17
+   elk1.example.com                 192.0.2.101  8
+   elk2.example.com                 192.0.2.102  17
 
 
 .. include:: ../../commit.rst
