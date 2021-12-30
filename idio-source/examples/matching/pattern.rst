@@ -29,11 +29,11 @@ sub-expressions they will be subsequent elements of the array.
 
 .. note::
 
-   The pattern matching expressions stash the compiled regular
-   expression in a global table.  This means that in loops the regular
-   expression doesn't need to be recompiled.  It also means the
-   compiled regular expressions are not reaped until :lname:`Idio`
-   exits.
+   The pattern matching expressions stash any compiled literal string
+   regular expressions in a global table.  This means that in loops
+   the regular expression doesn't need to be recompiled.  It also
+   means the compiled regular expressions are not reaped until
+   :lname:`Idio` exits.
 
 .. note::
 
