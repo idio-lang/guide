@@ -111,28 +111,30 @@ External commands will return ``#t`` or ``#f`` depending on whether
 they exited with 0 or not.  Well, they will initiate a return of
 ``#f`` if they fail.
 
-Unfortunately, you can't easily use this in logical expressions
-(:ref:`and <ref:and special form>`, :ref:`or <ref:or special form>`,
-:ref:`not <ref:not special form>`) or conditional expressions
-(:ref:`if <ref:if special form>`, :ref:`cond <ref:cond special form>`)
-because if the external command failed an ``^rt-command-status-error``
-condition will be raised, see below, for which the default behaviour
-is to exit (in the same manner as the external command died).
+You can use this in logical expressions (:ref:`and <ref:and special
+form>`, :ref:`or <ref:or special form>`, :ref:`not <ref:not special
+form>`) or conditional expressions (:ref:`if <ref:if special form>`,
+:ref:`cond <ref:cond special form>`) like in the shell.
 
-You could, rather crudely, wrap the expression with an "rcse"
-condition handler that simply returns ``#f`` but the real problem lies
-in that this "logical suppression" should really only occur for the
-immediate expression and not any sub-expressions (used to calculate
-arguments, say).
+.. code-block:: idio-console
 
-So, sadly, no system-provided equivalent of the shell's:
+   Idio> (true) or (false)
+   #t
+   Idio> (true) and (false)
+   #f
+   job  33041: (false): completed: (exit 1)
+   Idio> if (true) (printf "Y\n") (printf "N\n")
+   Y
+   #<unspec>
+   Idio> if (false) (printf "Y\n") (printf "N\n")
+   N
+   #<unspec>
+   job  33043: (false): completed: (exit 1)
 
-.. code-block:: sh
+.. note::
 
-   if grep ... ; then
-
-Suggesting this is :abbr:`WIP (Work in Progress)` would give the
-erroneous impression a solution is nearer than it is.
+   We get the *job notification* messages because this session is
+   interactive.  A script would not report job notifications.
 
 Errors
 ======
@@ -169,6 +171,14 @@ An ``^rt-command-status-error`` will be raised:
 
   will succeed
 
+  .. note::
+
+     The equivalent of ``suppress-pipefail! = #t`` is the default for
+     most shells and an interactive :lname:`Idio` session.
+
+     ``suppress-pipefail! = #f`` is the default for :lname:`Idio`
+     scripts.
+
 * if a standalone command or the rightmost command in a pipeline is
   killed or exits non-zero
 
@@ -195,6 +205,11 @@ will be fatal, whereas:
 
 will both succeed.
 
+.. note::
+
+   ``suppress-exit-on-error! = #t`` is equivalent to the shell's ``set
+   -e``.
+
 Async Commands
 --------------
 
@@ -202,14 +217,15 @@ There is a corner case for *asynchronous* commands, those that are
 part of *Process Substitution*, where they are not part of the flow,
 they are adjunct to it.
 
-Here, the default is to be told that the command failed.
+Here, the default is to be *told* that the command failed (but not
+exit because of it).
 
 An ``^rt-async-command-status-error`` will be raised under the same
 broad conditions as for normal standalone commands or pipelines.
 
-You can handle the condition yourself or change the
-``suppress-async-command-report!`` dynamic variable to a non-`false`
-value.
+You can handle the condition yourself (if you want to force an exit)
+or change the ``suppress-async-command-report!`` dynamic variable to a
+non-`false` value if you don't want to be told about it.
 
 Operators
 =========
@@ -229,9 +245,9 @@ I/O Operators
 
 The I/O operators, in particular, aren't as flexible as a normal shell
 largely because, as a programming language, :lname:`Idio` can carry
-file descriptors around, or :manpage:`dup2(2)` them or whatever, which
-a shell can't.  So you should be doing that, not trampling over file
-descriptor 3.
+file descriptors around, or :ref:`libc/dup2 <ref:libc/dup2>` them or
+whatever, which a shell can't.  So you should be doing that, not
+trampling over file descriptor 3.
 
 The I/O operators are slightly less flexible in terms of positioning,
 they can only be placed *after* the command to be run, partly because
@@ -296,7 +312,8 @@ The general form is :samp:`... {op} {expr}` where the options for
 
   * an (an appropriately directioned) string handle
 
-  * a string which will be opened in the appropriate direction
+  * a string indicating a file name which will be opened in the
+    appropriate direction
 
   * ``#n`` meaning :file:`/dev/null` will be opened in the appropriate
     direction
@@ -350,6 +367,11 @@ pipeline:
      hn := collect-output uname -n
 
   :var:`hn` will be a string from the output of ``uname -n``
+
+  .. note::
+
+     ``collect-output`` will :ref:`strip-string <ref:strip-string>`
+     the output from the command of trailing newlines.
 
 * ``fg-job`` is the default and runs the job in the foreground
 

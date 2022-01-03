@@ -475,9 +475,9 @@ C Data Types
 
 For interaction with :ref:`libc <ref:libc module>`, the standard
 library, and :lname:`C` extensions, :lname:`Idio` supports the
-fourteen :lname:`C` base types and module-oriented typedefs thereof
-and :lname:`C` pointer types through the :ref:`C module <ref:C
-module>`.
+fourteen :lname:`C` base types and :lname:`C` library-oriented
+``typedef``\ s thereof and :lname:`C` pointer types through the
+:ref:`C module <ref:C module>`.
 
 There is limited manipulation of :lname:`C` data types, they are
 generally passed around opaquely.  You can do some comparisons and
@@ -497,10 +497,22 @@ easily:
    
 Here, :var:`sb` is a ``C/pointer`` type (and, specifically, a "CSI"
 tagged as :ref:`libc/struct-stat <ref:libc/struct-stat>`) and the
-``st_ino`` field is the portable ``ino_t`` type.
+``st_ino`` field is the portable :lname:`C` ``ino_t`` type.
 
-If you are interested, you can query what an ``ino_t`` really is on
-your system in a couple of ways:
+You can query the ``C/pointer`` with :ref:`C/pointer-name
+<C/pointer-name>` and :ref:`C/pointer-members <C/pointer-members>`.
+
+The member names are operating system-dependent and may include
+additional members (eg. ``st_atime`` for a ``libc/struct-stat`` which
+is likely to be a ``#define`` to ``st_atim.tv_sec``) if supported.
+
+.. code-block:: idio-console
+
+   Idio> C/pointer-members sb
+   (st_dev st_ino st_nlink st_mode st_uid st_gid st_rdev st_size st_blksize st_blocks st_atim st_mtim st_ctim st_atime st_mtime st_ctime)
+
+Going deeper, you can query what an ``ino_t`` really is on your system
+in a couple of ways:
 
 .. code-block:: idio-console
 
@@ -649,11 +661,10 @@ calculations.
 Nested Functions
 ^^^^^^^^^^^^^^^^
 
-Now we've got the idea that we can define functions inside other
-functions, we have *nested* functions.
-
-We don't have to save them out to the top-level we could just be using
-them as helper functions within the body of the outer function.
+Now we've got the idea that we can create, that is define, functions
+inside other functions, we have *nested* functions.  That is, we don't
+have to save them out to the top-level we could just be using them as
+helper functions within the body of the outer function.
 
 There's nothing to stop the helper functions having helper functions
 inside them.  You could go a bit wild, here, but try to think of the
@@ -703,8 +714,8 @@ We know that is going to be rewritten to:
      }
    })
 
-and, as the precursor to defining ``foo``, the evaluator will see the
-function value creation:
+and, as the *precursor* to defining ``foo``, the evaluator will see
+the function value creation:
 
 .. code-block:: idio
 
@@ -970,6 +981,37 @@ commands, for example.
 
 Instead, you can pick and choose "direct" names, say, :ref:`libc/mkdir
 <ref:libc/mkdir>`, using the combined :samp:`{module}/{name}` scheme,
-rather than get every ``libc`` name with a crude import.
+rather than get every ``libc`` name with a crude import:
+
+.. code-block:: idio
+
+   module Foo
+
+   mkdir "foo"		; /usr/bin/mkdir (probably)
+
+   libc/mkdir "bar" (C/integer-> #x644 libc/mode_t)
+
+
+
+``libc`` is an awkward example as it is used by the bootstrap and
+therefore has already been loaded by someone.  In general, if you want
+to use a name from a module, :ref:`require <ref:require>` the module
+first:
+
+.. code-block:: idio
+
+   module Foo
+
+   require json5	; Foo's namespace not modified but
+			; json5's names can be used directly
+
+   define (parse-file fn) {
+     json5/parse-file fn
+   }
+
+   ; no possible conflict in names
+   parse-file "foo.json"
+
+
 
 .. include:: ./commit.rst

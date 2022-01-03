@@ -338,7 +338,8 @@ load-once system with a combination of :ref:`require
 feature.
 
 You can :ref:`import <ref:import>` a module of code -- which uses the
-``require``/``provide`` mechanism as an aside.
+``require``/``provide`` mechanism as an aside -- and updates the set
+of names you can use in your code.
 
 Matching
 --------
@@ -389,9 +390,7 @@ Otherwise, you'll need to call the :ref:`glob <ref:glob>` function
 directly which will return a list of matches.
 
 ``glob`` can return no matches, the empty list, ``#n``, so you will
-need to test before passing the list onto an external command (as the
-constant ``#n`` has no sensible stringified representation for
-external commands):
+need to test before passing the list onto an external command:
 
 .. code-block:: idio
 
@@ -405,6 +404,19 @@ external commands):
 
 Here, :var:`files`, a list of file names, will have been expanded out
 as one of the arguments to the external command :program:`ls`.
+
+.. note::
+
+   You might be tempted to cut to the chase with:
+
+   .. code-block:: idio
+
+      ls -l (glob "*.c")
+
+   which is fine until it breaks.  If ``glob`` returns no matches,
+   ie. ``#n`` then you will get an ``^rt-command-argv-type-error`` as
+   there is no sensible stringified representation of ``#n`` for
+   external commands.  :program:`ls` will not be run.
 
 Indexing
 --------
@@ -446,10 +458,10 @@ Without any form of `Type Inference` then this must query the value
 type before continuing but it is considerably more readable.
 
 The indexing element can be a *variable* so that :samp:`arr.{i}` does
-the right thing.  Of course, if ``st_ino`` is a variable then the
-previous expression ``sb.st_ino`` might have unintended consequences.
-You can force a name/symbol with :ref:`quote <ref:quote special
-form>`: ``sb.'st_ino``.
+the right thing.  Of course, if ``st_ino`` is a variable in your code
+then the previous expression ``sb.st_ino`` might have unintended
+consequences.  You can force a name/symbol with :ref:`quote <ref:quote
+special form>`: ``sb.'st_ino``.
 
 The indexing element can also be a *function* in which case the
 function is applied to the value, that is :samp:`{v}.{f}` becomes an

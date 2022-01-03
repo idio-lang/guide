@@ -416,7 +416,7 @@ There's a couple of solutions, here:
       'mkdir "foo"
 
 #. we could not ``import libc`` but just use it selectively with
-   *direct references* to its exported names
+   *direct references* to its exported names.
 
    .. aside::
 
@@ -429,15 +429,41 @@ There's a couple of solutions, here:
 
       libc/exit 3
 
-   .. attention::
+   There's a slight qualification, here, in that *someone* has to have
+   :ref:`load <ref:load>`'ed the module at some point in the past in
+   order that the VM know about the module and its exported names.
+   That is, the act of using a direct name does not force the loading
+   of a module.
 
-      Direct references are technically an *artefact*.  In practice,
-      once one module has imported, say, ``libc``, then the evaluator
-      can lookup direct references to names in ``libc``.
+   Here we can use :ref:`require <ref:require>` to ensure the module
+   has been loaded but doesn't pollute our imports and therefore name
+   lookup path with extraneous names:
 
-      In this case, ``job-control`` is imported during bootstrap and
-      ``job-control``, in turn, imported ``libc``.  From then on
-      everyone is able to make direct references to names exported
-      from ``libc``.
+   .. code-block:: idio
+
+      module Foo
+
+      require libc
+
+      mkdir "foo"		; /usr/bin/mkdir (probably)
+
+      libc/mkdir "bar" (C/integer-> #x644 libc/mode_t)
+
+   .. note::
+
+      The crudeness of constructing a valid :lname:`C` ``mode_t`` with
+      :ref:`C/integer-> <ref:C/integer->>` is part of the joy of
+      mixing multiple language *domains* into one.  The :lname:`C`
+      interfaces expect :lname:`C` values (within reason -- there's no
+      way to create a :lname:`C` string, for example).
+
+      There are a few, rare, exceptions, like :ref:`libc/exit
+      <ref:libc/exit>`, above, where you are unlikely to have a
+      suitable value from a previous :lname:`C` call so, here, a
+      fixnum is also allowed.
+
+   In one sense, ``libc`` is unusual in that :lname:`Idio`'s own
+   startup has imported ``libc`` several times.  Use :samp:`require
+   {module}` just to be sure.
 
 .. include:: ./commit.rst

@@ -9,10 +9,11 @@ handling.  Conditions are from :lname:`Scheme` and offer a far richer
 mechanism for handling various states that might be reached within the
 program.
 
-The fundamental difference is that the program state is not unwound
-when a condition is raised meaning the handler has an opportunity to
-perform some appropriate action and return on behalf of the
-condition-raising code.
+The fundamental difference between condition handling in :lname:`Idio`
+and exception handling common to many programming languages is that
+the program state is not unwound when a condition is raised meaning
+the handler has an opportunity to perform some appropriate action and
+*return on behalf of* the condition-raising code.
 
 There are a few problems here:
 
@@ -27,7 +28,8 @@ Trapping Errors
 ===============
 
 Most people are familiar with the ``try``/``except`` mechanism from
-:lname:`Python` and we can constrain ourselves to that style.
+:lname:`Python` and in :lname:`Idio` we can constrain ourselves to
+that style.
 
 The expression for handling an error is:
 
@@ -40,7 +42,8 @@ Here, :samp:`{condition*}` is a named :ref:`condition type
 condition that was raised as an argument.  Given how bespoke the
 required behaviour is, it will usually be an anonymous function.
 
-:samp:`{body}` is the expression that the handler is valid for.
+:samp:`{body}` is the expression (scope!) that the handler is valid
+for.
 
 The constraint is that the handler should call :ref:`trap-return
 <ref:trap-return>` when it is done.
@@ -80,14 +83,15 @@ which is, more or less, what you would expect.
 There are two things of interest:
 
 #. ``trap`` returned a value, :var:`c`, the condition it was passed,
-   although, as no-one is capturing the value returned, it is lost.
+   although, as no-one is using the value returned from ``trap``, it
+   is lost
 
-#. if we hadn't have tried with ``0`` then we would have run
+#. if we hadn't have called ``reciprocate 0`` then we would have run
    ``reciprocate 2`` which would have returned ``0.5`` and as that was
    the last expression in its body then that is what ``trap`` would
    have returned
 
-   Albeit, no-one is capturing the value...
+   Albeit, no-one is using the value returned from ``trap``...
 
 .. warning::
 
