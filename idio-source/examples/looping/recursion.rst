@@ -4,7 +4,7 @@
 Recursion
 #########
 
-There's a subtle distinction between top-level in in-block function
+There's a subtle distinction between top-level and in-block function
 definitions (due to the way references to the values are made).
 
 Top-Level

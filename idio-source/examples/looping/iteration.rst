@@ -39,7 +39,9 @@ bespoke.  Here, multiply the elements by 2:
      v * 2
    }) '(1 2 3)			; '(2 4 6)
 
-although a named function is perfectly fine:
+although a named function is perfectly fine -- noting that
+:lname:`Idio` allows you to use oddly-named functions, here the
+function is called ``*2``:
 
 .. code-block:: idio
 
@@ -118,7 +120,8 @@ We could count the number of odd numbers in a list:
    }) 0 '(1 2 3 4 5)			; 3
 
 Here, if the list's value, :var:`v`, is odd then return the current
-accumulated value plus 1 otherwise return the accumulated value.
+accumulated value plus 1 otherwise return the (unadjusted) accumulated
+value.
 
 List Generator
 ^^^^^^^^^^^^^^

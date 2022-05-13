@@ -20,7 +20,7 @@ symbols.
 
 ``case`` takes a key and a number of clauses where each clause takes
 the form :samp:`(({v} ...) {expr} ...)` except the last clause which
-can take the form :samp:`(else {expr} ...)`.
+can also take the form :samp:`(else {expr} ...)`.
 
 The key is evaluated and then compared with :ref:`memv <ref:memv>`
 against the list in the head of each clause.

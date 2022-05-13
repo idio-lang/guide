@@ -47,7 +47,7 @@ here:
 You'll notice from the ``"array"`` element that JSON's ``true`` has
 become :lname:`Idio`'s ``#t``.
 
-If we already has a string, then we can call :ref:`parse-string
+If we already had a string, then we can call :ref:`parse-string
 <ref:json5/parse-string>`.  Here, we'll cheat by collecting the output
 from :program:`cat`'ing the file:
 

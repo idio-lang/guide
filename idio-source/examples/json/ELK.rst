@@ -32,7 +32,7 @@ Our command line will therefore include:
 
 .. code-block:: idio
 
-   curl --netrc --netrc-file (named-pipe-into print-netrc) ...
+   curl --netrc --netrc-file (named-pipe-from print-netrc) ...
 
 where the function ``print-netrc`` can be set up along the lines of:
 
